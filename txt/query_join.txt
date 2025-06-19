@@ -1,0 +1,91 @@
+QUERY_JOIN exercises
+
+
+1. Selezionare tutti gli studenti iscritti al Corso di Laurea in Economia
+
+SELECT `s`.`id`, `s`.`name`, `s`.`surname`, `d`.`name` AS 'degree_name'
+FROM `students` AS `s`
+INNER JOIN `degrees` AS `d`
+ON `d`.`id` = `s`.`degree_id`
+WHERE `d`.`name` = 'Corso di Laurea in Economia';
+
+
+
+2. Selezionare tutti i Corsi di Laurea Magistrale del Dipartimento di Neuroscienze
+
+SELECT `deg`.`id`, `deg`.`name`, `level`, `dep`.`name` AS 'department_name'
+FROM `degrees` AS `deg`
+JOIN `departments` AS `dep`
+ON `deg`.`department_id` = `dep`.`id`
+WHERE `level` = 'magistrale' AND `dep`.`name` = 'Dipartimento di Neuroscienze';
+
+
+
+3. Selezionare tutti i corsi in cui insegna Fulvio Amato (id=44)
+
+SELECT `c`.*, CONCAT(`t`.`name`,' ',`t`.`surname`) AS 'teacher_name'
+FROM `courses` AS `c`
+JOIN `course_teacher` AS `ct`
+ON `ct`.`course_id` = `c`.`id`
+JOIN `teachers` AS `t`
+ON `ct`.`teacher_id` = `t`.`id`
+WHERE CONCAT(`t`.`name`,' ',`t`.`surname`) = 'Fulvio Amato';
+
+
+
+4. Selezionare tutti gli studenti con i dati relativi al corso di laurea a cui sono iscritti e il relativo dipartimento, in ordine alfabetico per cognome e nome
+
+SELECT `s`.`id`, CONCAT(`s`.`surname`,' ',`s`.`name`) AS 'student_name', `deg`.`name` AS 'degree_name', `dep`.`name` AS 'department_name'
+FROM `students` AS `s`
+JOIN `degrees` AS `deg`
+ON `s`.`degree_id` = `deg`.`id`
+JOIN `departments` AS `dep`
+ON `deg`.`department_id` = `dep`.`id`
+ORDER BY CONCAT(`s`.`surname`,' ',`s`.`name`);
+
+
+
+5. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti
+
+SELECT `d`.`id`, `d`.`name` AS 'degree_name', `c`.`name` AS 'course_name', CONCAT(`t`.`name`,' ',`t`.`surname`) AS 'teacher_name'
+FROM `courses` AS `c`
+JOIN `course_teacher` AS `ct`
+ON `ct`.`course_id` = `c`.`id`
+JOIN `teachers` AS `t`
+ON `ct`.`teacher_id` = `t`.`id`
+JOIN `degrees` AS `d`
+ON `c`.`degree_id` = `d`.`id`
+ORDER BY `d`.`id`;
+
+
+
+6. Selezionare tutti i docenti che insegnano nel Dipartimento di Matematica (54)
+
+SELECT DISTINCT `t`.`id`, CONCAT(`t`.`surname`,' ',`t`.`name` ) AS 'teacher_name', `dep`.`name` AS 'department_name'
+FROM `teachers` AS `t`
+JOIN `course_teacher` AS `ct`
+ON `ct`.`teacher_id` = `t`.`id`
+JOIN `courses` AS `c`
+ON `ct`.`course_id` = `c`.`id`
+JOIN `degrees` AS `deg`
+ON `c`.`degree_id` = `deg`.`id`
+JOIN `departments` AS `dep`
+ON `deg`.`department_id` = `dep`.`id`
+WHERE `dep`.`name` = 'Dipartimento di Matematica'
+ORDER BY CONCAT(`t`.`surname`,' ',`t`.`name` );
+
+
+
+7. BONUS: Selezionare per ogni studente il numero di tentativi sostenuti per ogni esame, stampando anche il voto massimo. Successivamente, filtrare i tentativi con voto minimo 18.
+
+SELECT `s`.`id` AS 'student_id', CONCAT(`s`.`surname`,' ',`s`.`name`) AS 'student_name', `c`.`name` AS 'course_name', COUNT(`c`.`name`) AS 'exam_attempts', MAX(`vote`) AS 'max_vote'
+FROM `students` AS `s`
+JOIN `exam_student` AS `es`
+ON `es`.`student_id` = `s`.`id`
+JOIN `exams` AS `e`
+ON `es`.`exam_id` = `e`.`id`
+JOIN `courses` AS `c`
+ON `e`.`course_id` = `c`.`id`
+GROUP BY `s`.`id`, CONCAT(`s`.`surname`,' ',`s`.`name`), `course_name`
+HAVING MAX(`vote`) >= 18
+ORDER BY CONCAT(`s`.`surname`,' ',`s`.`name`);

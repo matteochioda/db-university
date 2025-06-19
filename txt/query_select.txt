@@ -1,11 +1,11 @@
-DB-UNIVERSITY (Query Exercises)
+QUERY_SELECT exercises
 
 
 1. Selezionare tutti gli studenti nati nel 1990 (160)
 
 SELECT `id`, CONCAT(`name`,' ', `surname`) AS 'full_name', YEAR(`date_of_birth`) AS 'year_of_birth'
 FROM `students`
-WHERE YEAR(`date_of_birth`) = '1990';
+WHERE YEAR(`date_of_birth`) = 1990;
 
 
 
@@ -20,10 +20,10 @@ ORDER BY `cfu` ASC;
 
 3. Selezionare tutti gli studenti che hanno più di 30 anni
 
-SELECT `id`, CONCAT(`name`,' ', `surname`) AS 'full_name', `date_of_birth`
+SELECT `id`, CONCAT(`name`,' ', `surname`) AS 'full_name', `date_of_birth`, TIMESTAMPDIFF(YEAR, `date_of_birth`, CURDATE()) AS 'age'
 FROM `students` 
-WHERE `date_of_birth` <= '1995-06-15' 
-ORDER BY `date_of_birth` ASC;
+WHERE TIMESTAMPDIFF(YEAR, `date_of_birth`, CURDATE()) > 30
+ORDER BY TIMESTAMPDIFF(YEAR, `date_of_birth`, CURDATE()) ASC;
 
 
 
